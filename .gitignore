@@ -1,0 +1,10 @@
+.token
+__pycache__
+build
+dist
+venv
+.log
+*.pyc
+research
+.pytest_cache
+.ipynb_checkpoints
