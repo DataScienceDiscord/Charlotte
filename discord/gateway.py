@@ -6,6 +6,14 @@ from discord.message import Message
 
 
 class Gateway(object):
+    """An interface for discord's gateway API as described here:
+    https://discordapp.com/developers/docs/topics/gateway
+
+    Args:
+        token: The bot token.
+        message_queue: An empty queue that the gateway will dispatch received messages into.
+        wslib: A websocket library.
+    """
     ENDPOINT = "wss://gateway.discord.gg/?v=6&encoding=json"
     DEFAULT_HEARTBEAT_PERIOD = 45 # seconds
     OS = "linux"
@@ -29,6 +37,12 @@ class Gateway(object):
         return Gateway.ENDPOINT
 
     def receive_payload(self):
+        """Receives a payload packet from the websocket
+        and stores its sequence number.
+
+        Returns:
+            A Payload object.
+        """
         packet = self.ws.recv()
         if packet == "":
             return None
@@ -39,11 +53,24 @@ class Gateway(object):
         return payload
 
     def send_payload(self, payload):
+        """Sends a payload packet to the gateway.
+
+        Args:
+            payload: A Payload object.
+        """
         packet = payload.to_packet()
         print(">>", packet)
         self.ws.send(packet)
 
     def perform_handshake(self):
+        """Waits for the gateway to say hello then identifies with it and
+        waits for its READY acknowledgment.
+        In the process the heartbeat interval and session ID are defined.
+
+        Raises:
+            AssertionError: Unexpected behaviour from the gateway during the handshake.
+            KeyError: Handshake messages did not contain necessary information.
+        """
         # Say hello
         payload = self.receive_payload()
         assert payload == Payload.HELLO, "First message upon connection was not HELLO."
@@ -57,6 +84,12 @@ class Gateway(object):
         self.session_id = payload.data["session_id"]
 
     def connect(self):
+        """Opens a connection to the gateway and perform the agreed upon handshake.
+
+        Raises:
+            AssertionError: Unexpected behaviour from the gateway during the handshake.
+            KeyError: Handshake messages did not contain necessary information.
+        """
         self.ws = self.wslib.WebSocket()
         self.ws.connect(self.endpoint)
 
@@ -67,9 +100,20 @@ class Gateway(object):
             raise
 
     def resume(self):
+        """Attempts to reopen a connection and send a RESUME Payload to
+        get all the events that were sent during the disconnection period.
+
+        In the event that it fails to connect the first time,
+        it will attempt to open a new connection without resuming from the last
+        message received.
+
+        Raises:
+            AssertionError: Unexpected behaviour from the gateway during the handshake.
+            KeyError: Handshake messages did not contain necessary information.
+        """
         try:
             self.connect()
-        except AssertionError:
+        except AssertionError: # TODO: Move this outside resume
             # "It's also possible that your client cannot reconnect in time to resume,
             # in which case the client will receive a Opcode 9 Invalid Session and is expected
             # to wait a random amount of time—between 1 and 5 seconds—then send a fresh Opcode 2 Identify.
@@ -80,6 +124,13 @@ class Gateway(object):
         self.send_payload(payload)
 
     def reconnect(self):
+        """Closes the current connection and attempts to open a new one
+        and resume at the last message received.
+
+        Raises:
+            AssertionError: Unexpected behaviour from the gateway during the handshake.
+            KeyError: Handshake messages did not contain necessary information.
+        """
         self.stop()
         self.close()
         time.sleep(5)
@@ -87,11 +138,16 @@ class Gateway(object):
         self.start()
 
     def send_heartbeat(self):
+        """Sends a single HEARTBEAT Payload to the gateway."""
         self.heartbeat_acknowledged = False
         payload = Payload(Payload.HEARTBEAT, data=self.last_seq)
         self.send_payload(payload)
 
     def make_heart_beat(self):
+        """Sends heartbeats at the chosen heartbeat interval
+        until told to stop or the connection drops, in which case
+        it'll attempt to reconnect.
+        """
         while self.running:
             if not self.heartbeat_acknowledged:
                 self.reconnect()
@@ -101,6 +157,10 @@ class Gateway(object):
             time.sleep(self.heartbeat_period)
 
     def run(self):
+        """Receives and handle payloads until told to stop or the connection drops.
+        When a DISPATCH Payload is received it'll be put inside the message queue
+        for further processing by listeners.
+        """
         while self.running:
             payload = self.receive_payload()
 
@@ -123,9 +183,11 @@ class Gateway(object):
                 self.message_queue.put(message)
 
     def close(self):
+        """Closes the websocket connection."""
         self.ws.close()
 
     def start(self):
+        """Starts listening for Payloads and sending heartbeats."""
         self.running = True
         t = threading.Thread(target=self.run)
         t.start()
@@ -133,4 +195,5 @@ class Gateway(object):
         t.start()
 
     def stop(self):
+        """Stops listening for Payloads and sending heartbeats."""
         self.running = False
