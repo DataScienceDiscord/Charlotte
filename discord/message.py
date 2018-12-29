@@ -22,6 +22,7 @@ class Message(object):
         self.channel_id = channel_id
         self.user       = user
         self.username   = username
+        self.timestamp  = timestamp
         self.attachment = attachment
 
     @staticmethod

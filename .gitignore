@@ -8,3 +8,4 @@ venv
 research
 .pytest_cache
 .ipynb_checkpoints
+database/config.py

@@ -59,7 +59,7 @@ class Dispatcher(object):
             return command, params
         return None, None
 
-    def dispatch(self, command_id, params, message):
+    def dispatch(self, command_id, message, *args):
         """Calls the appropriate command with the given parameters.
 
         Args:
@@ -71,10 +71,8 @@ class Dispatcher(object):
             The results of the command.
         """
         command = commands.identifiers[command_id]
-        return command(params, message)
+        return command(*args, message, self.data_conn)
 
-    def store(self, message):
-        pass
 
     def run(self):
         """Listens for new messages in the incoming queue and dispatches
@@ -89,10 +87,9 @@ class Dispatcher(object):
 
             command, params = self.parse(message.content)
             if command:
-                response = self.dispatch(command, params, message)
+                response = self.dispatch(command, message, *args)
                 self.consumer.create_message(response)
-            else:
-                self.store(message)
+            self.dispatch("store", message)
 
     def start(self):
         """Starts listening for incoming messages."""

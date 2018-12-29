@@ -1,6 +1,8 @@
-from .say import say
+from .say   import say
+from .store import store
 
 
 identifiers = {
-    "say": say
+    "say": say,
+    "store": store
 }

@@ -1,6 +1,7 @@
 from discord import Gateway
 from discord import Consumer
 from dispatcher import Dispatcher
+from database import Database
 import threading
 import time
 import queue
@@ -12,7 +13,8 @@ with open(".token", "r") as f:
 message_queue = queue.Queue()
 
 consumer = Consumer(token)
-dispatch = Dispatcher(message_queue, None, consumer)
+db = Database()
+dispatch = Dispatcher(message_queue, db, consumer)
 dispatch.start()
 
 
@@ -26,8 +28,8 @@ def stop_in_a_while():
     dispatch.stop()
     message_queue.put(None)
 
-t = threading.Thread(target=stop_in_a_while)
-t.start()
+# t = threading.Thread(target=stop_in_a_while)
+# t.start()
 
 gw.start()
 dispatch.start()
