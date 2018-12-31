@@ -1,6 +1,5 @@
 # Todo: Export variable name to file
 import os
-os.environ['ENVCHARLOTTE'] = "DEV"
 
 from discord import Gateway
 from discord import Consumer
@@ -12,8 +11,13 @@ import queue
 import websocket
 
 
-with open(".token", "r") as f:
-    token = f.read()
+if os.environ['ENVCHARLOTTE'] == "PROD":
+    token = os.environ['DISCORDTOKEN']
+    if os.environ['INITDB'] == "TRUE":
+        import scripts.init_tables
+else:
+    with open(".token", "r") as f:
+        token = f.read()
 
 message_queue = queue.Queue()
 
@@ -38,3 +42,6 @@ def stop_in_a_while():
 
 gw.start()
 dispatch.start()
+
+while 1:
+    time.sleep(10)

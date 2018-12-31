@@ -87,7 +87,7 @@ class Dispatcher(object):
 
             command, params = self.parse(message.content)
             if command:
-                response = self.dispatch(command, message, *args)
+                response = self.dispatch(command, message, params)
                 self.consumer.create_message(response)
             self.dispatch("store", message)
 

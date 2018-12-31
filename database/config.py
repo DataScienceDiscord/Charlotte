@@ -9,10 +9,11 @@ except KeyError:
 
 assert ENV == "DEV" or ENV == "TEST" or ENV == "PROD", "Unknown environment."
 
-secret_dir  = os.path.dirname(__file__)
-secret_path = os.path.join(secret_dir, "..", ".database_secret")
-with open(secret_path, "r") as f:
-    PASSWORD = f.read()
+if ENV == "DEV" or ENV == "TEST":
+    secret_dir  = os.path.dirname(__file__)
+    secret_path = os.path.join(secret_dir, "..", ".database_secret")
+    with open(secret_path, "r") as f:
+        PASSWORD = f.read()
 
 if ENV == "DEV":
     USER = "postgres"
@@ -27,7 +28,7 @@ elif ENV == "TEST":
 elif ENV == "PROD":
     # https://devcenter.heroku.com/articles/heroku-postgresql#connecting-in-python
     url    = os.environ['DATABASE_URL']
-    result = urlparse(URL)
+    result = urlparse(url)
     USER     = result.username
     PASSWORD = result.password
     NAME     = result.path[1:]

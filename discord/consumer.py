@@ -33,7 +33,7 @@ class Consumer(object):
         if message.attachment != None:
             headers = copy.deepcopy(self.headers)
             headers["Content-Type"] = "multipart/form-data"
-
+        print(">>", message.to_json())
         requests.post(Consumer.ENDPOINT + Consumer.CREATE_MESSAGE_ROUTE % message.channel_id,
                       headers = headers,
                       data    = message.to_json())
