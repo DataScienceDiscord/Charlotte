@@ -33,3 +33,14 @@ before_script:
 
 script:
   - pytest
+  - sphinx-apidoc -o docs/source/_generated . tests/* main.py -e
+  - make -C docs html
+
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+  local-dir: docs/build/html
+  repo: DataScienceDiscord/Charlotte-Documentation
+  on:
+    branch: master

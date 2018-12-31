@@ -8,7 +8,9 @@ except KeyError:
 
 assert ENV == "DEV" or ENV == "TEST", "Unknown environment."
 
-with open(".database_secret", "r") as f:
+secret_dir  = os.path.dirname(__file__)
+secret_path = os.path.join(secret_dir, "..", ".database_secret")
+with open(secret_path, "r") as f:
     PASSWORD = f.read()
 
 if ENV == "DEV":

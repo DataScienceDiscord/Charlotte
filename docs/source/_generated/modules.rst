@@ -1,5 +1,5 @@
-Discord
-=======
+Charlotte
+=========
 
 .. toctree::
    :maxdepth: 4
