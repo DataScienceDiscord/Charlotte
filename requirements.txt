@@ -1,0 +1,4 @@
+requests
+peewee
+psycopg2
+websocket-client
