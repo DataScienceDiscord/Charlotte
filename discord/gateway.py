@@ -19,6 +19,8 @@ class Gateway(object):
     OS = "linux"
     NAME = "Charlotte"
     ENV = "DEV"
+    RECONNECTION_FAILURE_THRESHOLD = 3
+    RECONNECTION_COUNTER_RESET     = 600
 
     def __init__(self, token, message_queue, wslib):
         self.token = token
@@ -28,13 +30,19 @@ class Gateway(object):
         self.connected = False
         self.heartbeat_period = Gateway.DEFAULT_HEARTBEAT_PERIOD
         self.heartbeat_acknowledged = True
-        self.last_seq         = None
-        self.session_id       = None
+        self.last_seq          = None
+        self.session_id        = None
+        self.reconnect_counter = 0
+        self.last_reconnect    = time.time()
         self.GUILD = "523141683379175424" if Gateway.ENV == "DEV" else "464539978442211328"
 
     @property
     def endpoint(self):
         return Gateway.ENDPOINT
+
+    @property
+    def time_since_last_reconnect(self):
+        return time.time() - self.last_reconnect
 
     def receive_payload(self):
         """Receives a payload packet from the websocket
@@ -134,8 +142,12 @@ class Gateway(object):
         self.stop()
         self.close()
         time.sleep(5)
+        if self.reconnect_counter >= Gateway.RECONNECTION_FAILURE_THRESHOLD:
+            raise ValueError("Reconnection attempts threshold has been reached. Stopping.")
         self.resume()
         self.start()
+        self.reconnect_counter += 1
+        self.last_reconnect     = time.time()
 
     def send_heartbeat(self):
         """Sends a single HEARTBEAT Payload to the gateway."""
@@ -152,6 +164,9 @@ class Gateway(object):
             if not self.heartbeat_acknowledged:
                 self.reconnect()
                 break
+
+            if self.reconnect_counter > 0 and self.time_since_last_reconnect >= Gateway.RECONNECTION_COUNTER_RESET:
+                self.reconnect_counter = 0
 
             self.send_heartbeat()
             time.sleep(self.heartbeat_period)
