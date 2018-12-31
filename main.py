@@ -1,3 +1,7 @@
+# Todo: Export variable name to file
+import os
+os.environ['ENVCHARLOTTE'] = "DEV"
+
 from discord import Gateway
 from discord import Consumer
 from dispatcher import Dispatcher
@@ -6,6 +10,7 @@ import threading
 import time
 import queue
 import websocket
+
 
 with open(".token", "r") as f:
     token = f.read()

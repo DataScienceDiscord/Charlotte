@@ -1,0 +1,35 @@
+addons:
+  postgresql: "10"
+  apt:
+    packages:
+    - postgresql-10
+    - postgresql-client-10
+
+env:
+  global:
+  - PGPORT=5433
+  - ENVCHARLOTTE=TEST
+
+services:
+  - postgresql
+
+language: python
+
+python:
+  - "3.6"
+
+before_install:
+  - sudo sed -i -e '/local.*peer/s/postgres/all/' -e 's/peer\|md5/trust/g' /etc/postgresql/*/main/pg_hba.conf
+  - sudo service postgresql restart
+  - sleep 1
+
+install:
+  - pip install -r requirements.txt
+
+before_script:
+  - touch .database_secret
+  - psql -c 'create database charlotte_test;' -U postgres
+  - python -m scripts.init_tables
+
+script:
+  - pytest

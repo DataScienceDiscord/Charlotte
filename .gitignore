@@ -8,6 +8,6 @@ venv
 research
 .pytest_cache
 .ipynb_checkpoints
-database/config.py
+.database_secret
 todo.todo
 docs/build
