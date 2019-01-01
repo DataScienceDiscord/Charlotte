@@ -42,6 +42,3 @@ def stop_in_a_while():
 
 gw.start()
 dispatch.start()
-
-while 1:
-    time.sleep(10)
