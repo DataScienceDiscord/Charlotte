@@ -11,6 +11,7 @@ class Consumer(object):
     """
     ENDPOINT = "https://discordapp.com/api/"
     CREATE_MESSAGE_ROUTE = "channels/%s/messages"
+    LIST_GUILD_MEMBERS_ROUTE = "guilds/%s/members"
     URL     = "https://github.com/DataScienceDiscord/Charlotte"
     NAME    = "Charlotte"
     VERSION = 0.1
@@ -37,3 +38,17 @@ class Consumer(object):
         requests.post(Consumer.ENDPOINT + Consumer.CREATE_MESSAGE_ROUTE % message.channel_id,
                       headers = headers,
                       data    = message.to_json())
+
+    def list_guild_members(self, guild_id, limit=1000):
+        """Gets a list of the guild members.
+
+        Args:
+            guild_id: The guild whose members we want.
+            limit: The number of members to get.
+        """
+        headers = copy.deepcopy(self.headers)
+        del headers["Content-Type"]
+        params  = {"limit": limit}
+        return requests.get(Consumer.ENDPOINT + Consumer.LIST_GUILD_MEMBERS_ROUTE % guild_id,
+                            headers = headers,
+                            params  = params)
