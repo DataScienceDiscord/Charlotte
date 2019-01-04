@@ -1,5 +1,6 @@
 from database import User
 from database import Message
+from peewee import fn, JOIN, SQL
 
 
 class Database(object):
@@ -99,3 +100,19 @@ class Database(object):
             Whether the message was succesfully deleted.
         """
         return Message.delete().where(Message.id == message_id).execute()
+
+    def get_top_users_per_message_count(self, top_n=9):
+        query = User.select(User, fn.Count(Message.id).alias('count')) \
+                    .join(Message, JOIN.RIGHT_OUTER) \
+                    .group_by(User) \
+                    .order_by(SQL('count').desc()) \
+                    .limit(top_n)
+        return list(query)
+
+    def get_top_users_per_num_characters(self, top_n=20):
+        query = User.select(User, fn.SUM(fn.LENGTH(Message.content)).alias('length')) \
+                    .join(Message, JOIN.RIGHT_OUTER) \
+                    .group_by(User) \
+                    .order_by(SQL('length').desc()) \
+                    .limit(top_n)
+        return list(query)

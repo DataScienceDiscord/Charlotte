@@ -20,8 +20,7 @@ class Consumer(object):
         self.token = token
         self.headers = {
             "Authorization": "Bot %s" % self.token,
-            "User-Agent":    "%s (%s, %s)" % (Consumer.NAME, Consumer.URL, Consumer.VERSION),
-            "Content-Type":  "application/json"
+            "User-Agent":    "%s (%s, %s)" % (Consumer.NAME, Consumer.URL, Consumer.VERSION)
         }
 
     def create_message(self, message):
@@ -30,14 +29,14 @@ class Consumer(object):
         Args:
             message: The Message to be sent.
         """
-        headers = self.headers
+        route   = Consumer.ENDPOINT + Consumer.CREATE_MESSAGE_ROUTE % message.channel_id
+
         if message.attachment != None:
-            headers = copy.deepcopy(self.headers)
-            headers["Content-Type"] = "multipart/form-data"
-        print(">>", message.to_json())
-        requests.post(Consumer.ENDPOINT + Consumer.CREATE_MESSAGE_ROUTE % message.channel_id,
-                      headers = headers,
-                      data    = message.to_json())
+            files = {"file": message.attachment}
+            data  = {"payload_json": message.to_json()}
+            result = requests.post(route, headers=self.headers, data=data, files=files)
+        else:
+            result = requests.post(route, headers=self.headers, json=message.to_payload())
 
     def list_guild_members(self, guild_id, limit=1000):
         """Gets a list of the guild members.

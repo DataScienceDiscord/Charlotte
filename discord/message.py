@@ -15,15 +15,14 @@ class Message(object):
         attachment: The file that will be attached to the message.
     """
 
-    def __init__(self, content, channel_id, user, username, timestamp=None, attachment=None):
-        if attachment != None:
-            raise NotImplementedError("Can't add attachments to messages yet.")
+    def __init__(self, content, channel_id, user, username, timestamp=None, attachment=None, embed=None):
         self.content    = content
         self.channel_id = channel_id
         self.user       = user
         self.username   = username
         self.timestamp  = timestamp
         self.attachment = attachment
+        self.embed      = embed
 
     @staticmethod
     def from_payload(payload):
@@ -42,7 +41,7 @@ class Message(object):
                        username   = data["author"]["username"] + "#" + data["author"]["discriminator"],
                        timestamp  = data["timestamp"])
 
-    def to_json(self):
+    def to_payload(self):
         """Encodes the message in json in a format recognized by discord's APIs.
 
         Returns:
@@ -51,8 +50,14 @@ class Message(object):
         payload =  {
             "content": self.content,
             "tts": False,
-            "file": self.attachment,
-            "embed": None,
-            "payload_json": None
+            "embed": self.embed
         }
-        return json.dumps(payload)
+        return payload
+
+    def to_json(self):
+        """Encodes the message in json in a format recognized by discord's APIs.
+
+        Returns:
+            A json string.
+        """
+        return json.dumps(self.to_payload())
