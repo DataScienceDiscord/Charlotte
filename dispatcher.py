@@ -11,7 +11,8 @@ class Dispatcher(object):
         database_connection: The datanase interface.
         consumer: The discord REST API consumer to send messages through.
     """
-    COMMAND_PREFIX = "!c:"
+    COMMAND_PREFIX = "!c/"
+    DELIMITER      = "/"
 
     def __init__(self, inc_queue, database_connection, consumer):
         self.inc_queue = inc_queue
@@ -42,7 +43,7 @@ class Dispatcher(object):
         if self.is_command(content):
 
             # Extract command
-            command = content.split(":")[1]
+            command = content.split(Dispatcher.DELIMITER)[1]
             if command == "":
                 raise ValueError("Badly formatted command.")
 
