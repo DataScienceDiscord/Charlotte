@@ -18,6 +18,8 @@ def top(num_users, message, database):
     ax = seaborn.barplot(x=[u.count    for u in users],
                          y=[u.username for u in users],
                          palette=seaborn.color_palette(["#77b1da", "#3f6d8e"]))
+    plt.xlabel("Number of Messages")
+    plt.title("User Ranking")
 
     buf = io.BytesIO()
     ax.get_figure().savefig(buf, format='png', bbox_inches='tight')
