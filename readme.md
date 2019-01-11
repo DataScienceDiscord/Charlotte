@@ -1,0 +1,2 @@
+[![Build Status](https://travis-ci.com/DataScienceDiscord/Charlotte.svg?branch=master)](https://travis-ci.com/DataScienceDiscord/Charlotte)
+[![Coverage Status](https://coveralls.io/repos/github/DataScienceDiscord/Charlotte/badge.svg?branch=master)](https://coveralls.io/github/DataScienceDiscord/Charlotte?branch=master)
