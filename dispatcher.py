@@ -105,7 +105,7 @@ class Dispatcher(object):
                 self.stop()
                 break
 
-            process_message(message)
+            self.process_message(message)
 
     def start(self):
         """Starts listening for incoming messages."""

@@ -11,3 +11,4 @@ research
 .database_secret
 todo.todo
 docs/build
+.coverage
