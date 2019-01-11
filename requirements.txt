@@ -2,9 +2,11 @@ requests
 peewee
 psycopg2
 websocket-client
-pytest
+pytest>=4.0.2
 sphinx
 sphinxcontrib.napoleon
 sphinx_rtd_theme
 matplotlib
 seaborn
+pytest-cov
+coveralls

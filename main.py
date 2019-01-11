@@ -5,6 +5,7 @@ from discord import Gateway
 from discord import Consumer
 from dispatcher import Dispatcher
 from database import Database
+import commands
 import threading
 import time
 import queue
@@ -23,7 +24,7 @@ message_queue = queue.Queue()
 
 consumer = Consumer(token)
 db = Database()
-dispatch = Dispatcher(message_queue, db, consumer)
+dispatch = Dispatcher(message_queue, db, consumer, commands)
 dispatch.start()
 
 

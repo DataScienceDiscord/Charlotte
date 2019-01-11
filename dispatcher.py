@@ -1,4 +1,3 @@
-import commands
 import threading
 
 
@@ -14,10 +13,11 @@ class Dispatcher(object):
     COMMAND_PREFIX = "!c/"
     DELIMITER      = "/"
 
-    def __init__(self, inc_queue, database_connection, consumer):
+    def __init__(self, inc_queue, database_connection, consumer, commands):
         self.inc_queue = inc_queue
         self.data_conn = database_connection
         self.consumer  = consumer
+        self.commands  = commands
         self.running   = False
 
     def is_command(self, content):
@@ -48,12 +48,12 @@ class Dispatcher(object):
                 raise ValueError("Badly formatted command.")
 
             # Extract params
-            content_start = len(Dispatcher.COMMAND_PREFIX) + len(command)# +:
+            content_start = len(Dispatcher.COMMAND_PREFIX) + len(command)
             if content_start > len(content):
                 raise ValueError("Badly formatted command.")
             params = content[content_start:]
 
-            # Getting rid of the ":"
+            # Getting rid of the delimiter
             if len(params) >= 1:
                 params = params[1:]
 
@@ -71,9 +71,28 @@ class Dispatcher(object):
         Returns:
             The results of the command.
         """
-        command = commands.identifiers[command_id]
-        return command(*args, message, self.data_conn)
+        command = self.commands.identifiers[command_id]
+        return command(message, self.data_conn, *args)
 
+    def process_message(self, message):
+        """Calls the appropriate command with the given parameters.
+
+        Args:
+            command_id: The string identifier of the command.
+            params: The parameters to be passed to the command.
+            message: The full message which contained the command.
+
+        Returns:
+            The results of the command.
+        """
+        command, params = self.parse(message.content)
+        if command:
+            if command in self.commands.identifiers:
+                response = self.dispatch(command, message, params)
+            else:
+                response = self.dispatch("unknown_command", message)
+            self.consumer.create_message(response)
+        self.dispatch("store", message)
 
     def run(self):
         """Listens for new messages in the incoming queue and dispatches
@@ -86,14 +105,7 @@ class Dispatcher(object):
                 self.stop()
                 break
 
-            command, params = self.parse(message.content)
-            if command:
-                if command in commands.identifiers:
-                    response = self.dispatch(command, message, params)
-                else:
-                    response = self.dispatch("unknown_command", message, params)
-                self.consumer.create_message(response)
-            self.dispatch("store", message)
+            process_message(message)
 
     def start(self):
         """Starts listening for incoming messages."""

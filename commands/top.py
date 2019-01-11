@@ -7,7 +7,7 @@ from discord import Message
 
 
 
-def top(num_users, message, database):
+def top(message, database, num_users):
     num_users = int(num_users)
     if num_users > 9:
         return Message("Fuck off mate, bandwidth ain't free.", message.channel_id, "Charlotte", "Charlotte")

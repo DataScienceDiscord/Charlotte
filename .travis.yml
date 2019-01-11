@@ -35,6 +35,8 @@ script:
   - pytest
   - sphinx-apidoc -o docs/source/_generated . tests/* main.py -e
   - make -C docs html
+  - pytest --cov=. tests/ --cov-config .coveragerc --cov-report=
+  - coveralls
 
 deploy:
   provider: pages
