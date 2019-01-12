@@ -1,5 +1,5 @@
 import threading
-from queue import Queue
+import queue
 
 
 class Dispatcher(object):
@@ -104,8 +104,8 @@ class Dispatcher(object):
         while self.running:
             try:
                 message = self.inc_queue.get(timeout=self.queue_timeout)
-            except Queue.Empty:
-                continue # pragma: no cover
+            except queue.Empty:
+                continue
 
             if message == None:
                 self.stop()
