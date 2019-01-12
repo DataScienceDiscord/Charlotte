@@ -50,3 +50,22 @@ def test_equality_operator():
 
     payload2.data = payload.data
     assert payload2 == payload
+
+    assert payload != "ksldfe"
+
+
+def test_resume():
+    resume_payload = Payload.Resume("my_token", "session_id", 21)
+    assert resume_payload == Payload.RESUME
+    assert resume_payload.data["token"] == "my_token"
+    assert resume_payload.data["session_id"] == "session_id"
+    assert resume_payload.data["seq"] == 21
+
+
+def test_identify():
+    identify_payload = Payload.Identify("my_token", "linux", "Charlotte")
+    assert identify_payload == Payload.IDENTIFY
+    assert identify_payload.data["token"] == "my_token"
+    assert identify_payload.data["properties"]["$os"] == "linux"
+    assert identify_payload.data["properties"]["$browser"] == "Charlotte"
+    assert identify_payload.data["properties"]["$device"] == "Charlotte"
