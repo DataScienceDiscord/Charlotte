@@ -42,10 +42,10 @@ class Message(object):
                        timestamp  = data["timestamp"])
 
     def to_payload(self):
-        """Encodes the message in json in a format recognized by discord's APIs.
+        """Encodes the message into a payload-like dictionary, a format recognized by discord's APIs.
 
         Returns:
-            A json string.
+            A payload dictionary.
         """
         payload =  {
             "content": self.content,
