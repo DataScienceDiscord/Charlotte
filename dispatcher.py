@@ -1,4 +1,5 @@
 import threading
+from queue import Queue
 
 
 class Dispatcher(object):
@@ -10,15 +11,16 @@ class Dispatcher(object):
         database_connection: The datanase interface.
         consumer: The discord REST API consumer to send messages through.
     """
-    COMMAND_PREFIX = "!c/"
+    COMMAND_PREFIX = "!c/" # Must end with delimiter
     DELIMITER      = "/"
 
-    def __init__(self, inc_queue, database_connection, consumer, commands):
+    def __init__(self, inc_queue, database_connection, consumer, commands, queue_timeout=10):
         self.inc_queue = inc_queue
         self.data_conn = database_connection
         self.consumer  = consumer
         self.commands  = commands
         self.running   = False
+        self.queue_timeout = queue_timeout
 
     def is_command(self, content):
         """Indicates whether a message is a command.
@@ -43,14 +45,15 @@ class Dispatcher(object):
         if self.is_command(content):
 
             # Extract command
+            #commands look like:
+            # prefix(includes delimiter) command delimiter params
+            # without spaces
             command = content.split(Dispatcher.DELIMITER)[1]
             if command == "":
                 raise ValueError("Badly formatted command.")
 
             # Extract params
             content_start = len(Dispatcher.COMMAND_PREFIX) + len(command)
-            if content_start > len(content):
-                raise ValueError("Badly formatted command.")
             params = content[content_start:]
 
             # Getting rid of the delimiter
@@ -99,7 +102,10 @@ class Dispatcher(object):
         them to the appropriate commands and stores them.
         """
         while self.running:
-            message = self.inc_queue.get()
+            try:
+                message = self.inc_queue.get(timeout=self.queue_timeout)
+            except Queue.Empty:
+                continue # pragma: no cover
 
             if message == None:
                 self.stop()
@@ -112,6 +118,7 @@ class Dispatcher(object):
         self.running = True
         t = threading.Thread(target=self.run)
         t.start()
+        return t
 
     def stop(self):
         """Stops listening for incoming messages."""
