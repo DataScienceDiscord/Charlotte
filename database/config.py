@@ -34,4 +34,3 @@ elif ENV == "PROD":
     NAME     = result.path[1:]
     HOST     = result.hostname
     PORT     = result.port
-

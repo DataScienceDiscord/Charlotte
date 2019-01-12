@@ -47,3 +47,9 @@ deploy:
   repo: DataScienceDiscord/Charlotte-Documentation
   on:
     branch: master
+
+after_success:
+  - eval "$(ssh-agent -s)" # Start ssh-agent cache
+  - echo -e $SSH_KEY > /tmp/.id_travis
+  - chmod 600 /tmp/.id_travis
+  - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i /tmp/.id_travis $LIGHTSAIL_USER@$IP -p $PORT -C "./deploy.sh"

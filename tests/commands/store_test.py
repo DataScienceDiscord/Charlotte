@@ -45,7 +45,7 @@ def test_store_new_user():
 
     assert db.added_user != None
     stored_user, stored_username = db.added_user
-    assert stored_user == message.user
+    assert stored_user == message.author_id
     assert stored_username == message.username
     assert db.added_message == message
 
