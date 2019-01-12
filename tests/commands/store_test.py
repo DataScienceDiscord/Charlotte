@@ -5,7 +5,7 @@ from collections import namedtuple
 
 MockMessage = namedtuple("Message", ["content",
                                      "channel_id",
-                                     "user",
+                                     "author_id",
                                      "username"])
 
 
@@ -19,12 +19,12 @@ class MockDatabase(object):
         self.added_user = None
         self.added_message = None
 
-    def user_exists(self, user):
+    def member_exists(self, user):
         if self.user_exists_flag:
             return True
         return False
 
-    def add_user(self, user, username):
+    def add_member(self, user, username):
         self.added_user = (user, username)
 
     def add_message(self, message):

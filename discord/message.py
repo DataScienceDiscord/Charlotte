@@ -9,16 +9,16 @@ class Message(object):
     Args:
         content: The contents of the message.
         channel_id: The id of the channel the message will be written to.
-        user: The unique id of the user who sent/sends the message.
+        author_id: The unique id of the user who sent/sends the message.
         username: The current username#discriminator combo for that user.
         timestamp: The time of the message.
         attachment: The file that will be attached to the message.
     """
 
-    def __init__(self, content, channel_id, user, username, timestamp=None, attachment=None, embed=None):
+    def __init__(self, content, channel_id, author_id, username, timestamp=None, attachment=None, embed=None):
         self.content    = content
         self.channel_id = channel_id
-        self.user       = user
+        self.author_id  = author_id
         self.username   = username
         self.timestamp  = timestamp
         self.attachment = attachment
@@ -37,7 +37,7 @@ class Message(object):
         data = payload.data
         return Message(content    = data["content"],
                        channel_id = data["channel_id"],
-                       user       = data["author"]["id"],
+                       author_id  = data["author"]["id"],
                        username   = data["author"]["username"] + "#" + data["author"]["discriminator"],
                        timestamp  = data["timestamp"])
 

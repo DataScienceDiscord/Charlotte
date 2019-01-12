@@ -12,7 +12,7 @@ def top(message, database, num_users):
     if num_users > 9:
         return Message("Fuck off mate, bandwidth ain't free.", message.channel_id, "Charlotte", "Charlotte")
 
-    users = database.get_top_users_per_message_count(top_n=num_users)
+    users = database.get_top_members_per_message_count(top_n=num_users)
     my_dpi = 100
     plt.figure(figsize=(600/my_dpi, 300/my_dpi), dpi=my_dpi)
     ax = seaborn.barplot(x=[u.count    for u in users],

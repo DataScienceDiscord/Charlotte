@@ -24,7 +24,7 @@ def test_from_payload():
     assert isinstance(message, Message)
     assert message.content    == payload.data["content"]
     assert message.channel_id == payload.data["channel_id"]
-    assert message.user       == payload.data["author"]["id"]
+    assert message.author_id  == payload.data["author"]["id"]
     assert message.username   == payload.data["author"]["username"] + "#" + payload.data["author"]["discriminator"]
     assert message.timestamp  == payload.data["timestamp"]
 

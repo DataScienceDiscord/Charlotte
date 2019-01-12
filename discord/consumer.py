@@ -46,7 +46,6 @@ class Consumer(object):
             limit: The number of members to get.
         """
         headers = copy.deepcopy(self.headers)
-        del headers["Content-Type"]
         params  = {"limit": limit}
         return requests.get(Consumer.ENDPOINT + Consumer.LIST_GUILD_MEMBERS_ROUTE % guild_id,
                             headers = headers,

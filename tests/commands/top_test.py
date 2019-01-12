@@ -15,7 +15,7 @@ class MockDatabase(object):
     def __init__(self):
         pass
 
-    def get_top_users_per_message_count(self, top_n):
+    def get_top_members_per_message_count(self, top_n):
         users = []
         for i in range(top_n):
             user = MockUser(i, "user%d" % i)
