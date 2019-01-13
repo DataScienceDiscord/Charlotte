@@ -49,7 +49,9 @@ deploy:
     branch: master
 
 after_success:
-  - eval "$(ssh-agent -s)" # Start ssh-agent cache
-  - echo -e $SSH_KEY > /tmp/.id_travis
-  - chmod 600 /tmp/.id_travis
-  - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i /tmp/.id_travis $LIGHTSAIL_USER@$IP -p $PORT -C "./deploy.sh"
+  - if [[ $TRAVIS_BRANCH == "master" && $TRAVIS_PULL_REQUEST == "false" ]]; then
+      eval "$(ssh-agent -s)";
+      echo -e $SSH_KEY > /tmp/.id_travis;
+      chmod 600 /tmp/.id_travis;
+      ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i /tmp/.id_travis $LIGHTSAIL_USER@$IP -p $PORT -C "./deploy.sh";
+    fi
