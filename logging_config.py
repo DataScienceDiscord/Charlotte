@@ -10,8 +10,8 @@ config = {
     "version": 1,
     "formatters": {
         "MainFormatter" :{
-            "format":  "[%(asctime)s] - %(levelname)-8s - %(name)-35s - %(message)s",
-            "datefmt": "%y-%m-%d %H:%M:%S.%f"
+            "format":  "[%(asctime)s.%(msecs)03d] - %(levelname)-8s - %(name)-35s - %(message)s",
+            "datefmt": "%y-%m-%d %H:%M:%S"
         }
     },
     "handlers": {
