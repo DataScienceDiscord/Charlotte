@@ -3,7 +3,7 @@ source ~/.profile
 # Update code
 rm -rf Charlotte
 git clone https://github.com/DataScienceDiscord/Charlotte.git
-cat Charlotte/requirements.txt | xargs -n 1 pip3 install
+cat Charlotte/requirements.txt | xargs -n 1 python3.5 -m pip install
 
 # Restart process
 if [[ -e /tmp/charlotte.pid ]]; then   # If the file do not exists, then the
