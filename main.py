@@ -10,6 +10,9 @@ import threading
 import time
 import queue
 import websocket
+import logging
+import logging.config
+import logging_config
 
 
 if os.environ['ENVCHARLOTTE'] == "PROD":
@@ -19,6 +22,13 @@ if os.environ['ENVCHARLOTTE'] == "PROD":
 else:
     with open(".token", "r") as f:
         token = f.read()
+
+
+
+logging.config.dictConfig(logging_config.config)
+logger = logging.getLogger(__name__)
+logger.info("Starting with ENVCHARLOTTE=%s." % os.environ['ENVCHARLOTTE'])
+
 
 message_queue = queue.Queue()
 
