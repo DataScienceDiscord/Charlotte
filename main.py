@@ -25,7 +25,6 @@ message_queue = queue.Queue()
 consumer = Consumer(token)
 db = Database()
 dispatch = Dispatcher(message_queue, db, consumer, commands)
-dispatch.start()
 
 
 gw = Gateway(token, message_queue, websocket)
