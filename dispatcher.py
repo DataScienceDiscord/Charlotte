@@ -1,5 +1,6 @@
 import threading
 import queue
+import logging
 
 
 class Dispatcher(object):
@@ -14,13 +15,14 @@ class Dispatcher(object):
     COMMAND_PREFIX = "!c/" # Must end with delimiter
     DELIMITER      = "/"
 
-    def __init__(self, inc_queue, database_connection, consumer, commands, queue_timeout=10):
+    def __init__(self, inc_queue, database_connection, consumer, commands, queue_timeout=10, logging=logging):
         self.inc_queue = inc_queue
         self.data_conn = database_connection
         self.consumer  = consumer
         self.commands  = commands
         self.running   = False
         self.queue_timeout = queue_timeout
+        self.logger = logging.getLogger(__name__)
 
     def is_command(self, content):
         """Indicates whether a message is a command.
@@ -74,6 +76,7 @@ class Dispatcher(object):
         Returns:
             The results of the command.
         """
+        self.logger.info("Comand called by %s(%s): %s.", message.username, message.author_id, command_id)
         command = self.commands.identifiers[command_id]
         return command(message, self.data_conn, *args)
 
@@ -101,6 +104,7 @@ class Dispatcher(object):
         """Listens for new messages in the incoming queue and dispatches
         them to the appropriate commands and stores them.
         """
+        self.logger.info("Dispatcher loop started.")
         while self.running:
             try:
                 message = self.inc_queue.get(timeout=self.queue_timeout)
@@ -112,9 +116,11 @@ class Dispatcher(object):
                 break
 
             self.process_message(message)
+        self.logger.info("Dispatcher loop ended.")
 
     def start(self):
         """Starts listening for incoming messages."""
+        self.logger.info("Dispatcher thread starting.")
         self.running = True
         t = threading.Thread(target=self.run)
         t.start()
@@ -122,4 +128,5 @@ class Dispatcher(object):
 
     def stop(self):
         """Stops listening for incoming messages."""
+        self.logger.info("Dispatcher thread stopping.")
         self.running = False
