@@ -31,15 +31,5 @@ dispatch.start()
 gw = Gateway(token, message_queue, websocket)
 gw.connect()
 
-def stop_in_a_while():
-    time.sleep(30)
-    gw.stop()
-    gw.close()
-    dispatch.stop()
-    message_queue.put(None)
-
-# t = threading.Thread(target=stop_in_a_while)
-# t.start()
-
 gw.start()
 dispatch.start()
