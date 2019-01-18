@@ -1,7 +1,7 @@
 import os
 
 if os.environ['ENVCHARLOTTE'] == "PROD":
-    log_file_path = "/var/log/charlotte/charlotte.log"
+    log_file_path = ".charlotte/logs/charlotte.log"
 else:
     log_file_path = "charlotte.log"
 
