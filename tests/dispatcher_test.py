@@ -67,25 +67,27 @@ def test_parse():
 
 def test_dispatch():
     Commands = namedtuple("Commands", ["identifiers"])
+    Message = namedtuple("Message", ["username", "author_id"])
+
     def command_func(message, database, arg1, arg2, arg3):
         return message, database, arg1, arg2, arg3
     commands = Commands({"existing_command": command_func})
 
     ds = Dispatcher(queue.Queue(), "database", "consumer", commands)
-
+    message = Message("username123", "123455")
     # Correct args
     response = ds.dispatch("existing_command",
-                           "message",
+                           message,
                            "arg1",
                            "arg2",
                            "arg3")
-    assert response == ("message", "database", "arg1", "arg2", "arg3")
+    assert response == (message, "database", "arg1", "arg2", "arg3")
 
 
     # Wrong args, correct command
     try:
         response = ds.dispatch("existing_command",
-                               "message",
+                               message,
                                "arg1",
                                "arg2")
         assert False, "Should have raised a TypeError."
@@ -95,7 +97,7 @@ def test_dispatch():
 
     # Wrong command
     try:
-        response = ds.dispatch("wrong_command", "message", "database")
+        response = ds.dispatch("wrong_command", message, "database")
         assert False, "Should have raised a KeyError."
     except KeyError:
         pass

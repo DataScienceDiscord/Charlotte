@@ -76,7 +76,7 @@ class Dispatcher(object):
         Returns:
             The results of the command.
         """
-        self.logger.info("Comand called by %s(%s): %s.", message.username, message.author_id, command_id)
+        self.logger.info("Command called by %s(%s): %s.", message.username, message.author_id, command_id)
         command = self.commands.identifiers[command_id]
         return command(message, self.data_conn, *args)
 

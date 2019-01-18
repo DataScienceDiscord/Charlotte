@@ -1,5 +1,6 @@
 import time
 import threading
+import logging
 
 from discord.payload import Payload
 from discord.message import Message
@@ -21,7 +22,7 @@ class Gateway(object):
     RECONNECTION_FAILURE_THRESHOLD = 3
     RECONNECTION_COUNTER_RESET     = 600
 
-    def __init__(self, token, message_queue, wslib):
+    def __init__(self, token, message_queue, wslib, logging=logging):
         self.token = token
         self.message_queue = message_queue
         self.wslib     = wslib
@@ -33,6 +34,7 @@ class Gateway(object):
         self.session_id        = None
         self.reconnect_counter = 0
         self.last_reconnect    = time.time()
+        self.logger = logging.getLogger(__name__)
 
     @property
     def endpoint(self):
@@ -50,9 +52,9 @@ class Gateway(object):
             A Payload object.
         """
         packet = self.ws.recv()
+        self.logger.info("Inc. packet: %s", packet[:1000])
         if packet == "":
             return None
-        print("<<", packet)
         payload = Payload.from_packet(packet)
         if payload.seq_number:
             self.last_seq = payload.seq_number
@@ -65,8 +67,12 @@ class Gateway(object):
             payload: A Payload object.
         """
         packet = payload.to_packet()
-        print(">>", packet)
         self.ws.send(packet)
+        # Make sure we don't log confidential info.
+        to_log = packet
+        if payload.opcode == Payload.IDENTIFY:
+            to_log = "CENSORED_IDENTIFY_PACKET"
+        self.logger.info("Out. packet: %s", to_log)
 
     def perform_handshake(self):
         """Waits for the gateway to say hello then identifies with it and
@@ -96,13 +102,16 @@ class Gateway(object):
             AssertionError: Unexpected behaviour from the gateway during the handshake.
             KeyError: Handshake messages did not contain necessary information.
         """
+        self.logger.info("Creating new websocket.")
         self.ws = self.wslib.WebSocket()
         self.ws.connect(self.endpoint)
 
         try:
             self.perform_handshake()
+            self.logger.info("Handshake success.")
         except (AssertionError, KeyError):
             self.ws.close()
+            self.logger.error("Handshake failure.", exc_info=True)
             raise
 
     def resume(self):
@@ -137,10 +146,12 @@ class Gateway(object):
             AssertionError: Unexpected behaviour from the gateway during the handshake.
             KeyError: Handshake messages did not contain necessary information.
         """
+        self.logger.info("Attempting to reconnect. Attempt %d.", self.reconnect_counter)
         self.stop()
         self.close()
         time.sleep(5)
         if self.reconnect_counter >= Gateway.RECONNECTION_FAILURE_THRESHOLD:
+            self.logger.error("Reached reconnection threshold.")
             raise ValueError("Reconnection attempts threshold has been reached. Stopping.")
         self.resume()
         self.start()
@@ -158,22 +169,27 @@ class Gateway(object):
         until told to stop or the connection drops, in which case
         it'll attempt to reconnect.
         """
+        self.logger.info("Heartbeat loop started.")
         while self.running:
             if not self.heartbeat_acknowledged:
+                self.logger.info("Heart skipped a beat.")
                 self.reconnect()
                 break
 
             if self.reconnect_counter > 0 and self.time_since_last_reconnect >= Gateway.RECONNECTION_COUNTER_RESET:
+                self.logger.info("Reset reconnection counter.")
                 self.reconnect_counter = 0
 
             self.send_heartbeat()
             time.sleep(self.heartbeat_period)
+        self.logger.info("Heartbeat loop ended.")
 
     def run(self):
         """Receives and handle payloads until told to stop or the connection drops.
         When a DISPATCH Payload is received it'll be put inside the message queue
         for further processing by listeners.
         """
+        self.logger.info("Gateway main loop started.")
         while self.running:
             payload = self.receive_payload()
 
@@ -183,6 +199,7 @@ class Gateway(object):
                 raise ValueError("Connection closed.")
 
             elif payload == Payload.HEARTBEAT:
+                self.logger.info("Heartbeat request.")
                 self.send_heartbeat()
                 # We don't require acknowledgement for requested beats
                 # so as not to create race conditions with beating thread.
@@ -192,15 +209,19 @@ class Gateway(object):
                 self.heartbeat_acknowledged = True
 
             elif payload == Payload.DISPATCH and payload.event_name == "MESSAGE_CREATE":
+                self.logger.info("Passing message to dispatcher.")
                 message = Message.from_payload(payload)
                 self.message_queue.put(message)
+        self.logger.info("Gateway main loop ended.")
 
     def close(self):
         """Closes the websocket connection."""
+        self.logger.info("Gateway websocket closing.")
         self.ws.close()
 
     def start(self):
         """Starts listening for Payloads and sending heartbeats."""
+        self.logger.info("Gateway threads starting.")
         self.running = True
         t = threading.Thread(target=self.run)
         t.start()
@@ -209,4 +230,5 @@ class Gateway(object):
 
     def stop(self):
         """Stops listening for Payloads and sending heartbeats."""
+        self.logger.info("Gateway threads stopping.")
         self.running = False
