@@ -18,7 +18,6 @@ class Gateway(object):
     DEFAULT_HEARTBEAT_PERIOD = 45 # seconds
     OS = "linux"
     NAME = "Charlotte"
-    ENV = "DEV"
     RECONNECTION_FAILURE_THRESHOLD = 3
     RECONNECTION_COUNTER_RESET     = 600
 
@@ -34,7 +33,6 @@ class Gateway(object):
         self.session_id        = None
         self.reconnect_counter = 0
         self.last_reconnect    = time.time()
-        self.GUILD = "523141683379175424" if Gateway.ENV == "DEV" else "464539978442211328"
 
     @property
     def endpoint(self):
