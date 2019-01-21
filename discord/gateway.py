@@ -72,6 +72,8 @@ class Gateway(object):
         to_log = packet
         if payload.opcode == Payload.IDENTIFY:
             to_log = "CENSORED_IDENTIFY_PACKET"
+        elif payload.opcode == Payload.RESUME:
+            to_log = "CENSORED_RESUME_PACKET"
         self.logger.info("Out. packet: %s", to_log)
 
     def perform_handshake(self):
