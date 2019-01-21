@@ -223,6 +223,7 @@ class Gateway(object):
         """Starts listening for Payloads and sending heartbeats."""
         self.logger.info("Gateway threads starting.")
         self.running = True
+        self.heartbeat_acknowledged = True
         t = threading.Thread(target=self.run)
         t.start()
         t = threading.Thread(target=self.make_heart_beat)
