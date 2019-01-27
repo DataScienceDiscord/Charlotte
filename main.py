@@ -9,7 +9,6 @@ import commands
 import threading
 import time
 import queue
-import websocket
 import logging
 import logging.config
 import logging_config
@@ -37,8 +36,6 @@ db = Database()
 dispatch = Dispatcher(message_queue, db, consumer, commands)
 
 
-gw = Gateway(token, message_queue, websocket)
-gw.connect()
-
+gw = Gateway(token, message_queue)
 gw.start()
 dispatch.start()
