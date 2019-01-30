@@ -11,5 +11,6 @@ research
 .database_secret
 todo.todo
 docs/build
+docs/source/_generated
 .coverage
 charlotte.log

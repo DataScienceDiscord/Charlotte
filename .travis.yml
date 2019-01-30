@@ -33,7 +33,7 @@ before_script:
 
 script:
   - pytest
-  - sphinx-apidoc -o docs/source/_generated . tests/* main.py -e
+  - sphinx-apidoc -o docs/source/_generated . tests/* main.py -e -f
   - make -C docs html
   - pytest --cov=. tests/ --cov-config .coveragerc --cov-report=
   - coveralls
