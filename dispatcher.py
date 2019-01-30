@@ -97,7 +97,8 @@ class Dispatcher(object):
                 response = self.dispatch(command, message, params)
             else:
                 response = self.dispatch("unknown_command", message)
-            self.consumer.create_message(response)
+            if response is not None:
+                self.consumer.create_message(response)
         self.dispatch("store", message)
 
     def run(self):
