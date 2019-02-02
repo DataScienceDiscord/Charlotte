@@ -7,6 +7,11 @@
 **Charlotte** is a small discord bot with its own lightweight interface to the discord gateway and rest api. The bot is intended to be used as a learning tool for the users of our discord channel. The small code base makes it easy to dive into the project and the continuous integration will enable the contributors to discover and understand a basic development workflow, from discussing features, to implementation, testing, documentation and deployment as well as some basic aspects of version control and working in a team.  
 We hope to be able to add data science related commands that will allow the contributors to practice their data preprocessing, SQL and plotting skills (and possibly ML in the future).
 
+## Applying
+
+If you want to follow the course, you should read the following documents:
+https://github.com/DataScienceDiscord/Charlotte/blob/master/applying.md
+
 ## Commands
 
 Commands can be called using the following format: **!c/command/parameter**
