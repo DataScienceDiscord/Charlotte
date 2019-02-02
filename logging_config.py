@@ -10,7 +10,7 @@ config = {
     "version": 1,
     "formatters": {
         "MainFormatter" :{
-            "format":  "[%(asctime)s.%(msecs)03d] - %(levelname)-8s - %(name)-20s - %(message)s",
+            "format":  "[%(asctime)s.%(msecs)03d] - %(levelname)-8s - %(thread)d - %(name)-20s - %(message)s",
             "datefmt": "%y-%m-%d %H:%M:%S"
         }
     },
