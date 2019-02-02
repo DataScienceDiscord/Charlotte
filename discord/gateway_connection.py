@@ -52,7 +52,10 @@ class GatewayConnection(object):
         Returns:
             A Payload object.
         """
-        packet = self.ws.recv()
+        try:
+            packet = self.ws.recv()
+        except ConnectionResetError as e:
+            raise DisconnectionException() from e
         self.logger.info("Inc. packet: %s", packet[:1000])
         if packet == "":
             raise DisconnectionException()
