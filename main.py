@@ -12,6 +12,7 @@ import queue
 import logging
 import logging.config
 import logging_config
+import sys
 
 
 if os.environ['ENVCHARLOTTE'] == "PROD":
@@ -23,11 +24,17 @@ else:
         token = f.read()
 
 
-
 logging.config.dictConfig(logging_config.config)
 logger = logging.getLogger(__name__)
 logger.info("Starting with ENVCHARLOTTE=%s." % os.environ['ENVCHARLOTTE'])
 
+
+def log_exception_hook(exc_type, exc_value, exc_traceback):
+    if issubclass(exc_type, KeyboardInterrupt):
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+        return
+    logger.critical("Uncaught exception.", exc_info=(exc_type, exc_value, exc_traceback))
+sys.excepthook = log_exception_hook
 
 message_queue = queue.Queue()
 
