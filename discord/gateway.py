@@ -128,6 +128,7 @@ class Gateway(object):
         self.logger.info("Gateway main thread starting.")
         resuming = False
         while self.running:
+            self.logger.info("Applying %d seconds reconnection delay.", self.connection_interval)
             time.sleep(self.connection_interval)
             with self.GatewayConnection() as connection:
                 try:

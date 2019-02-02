@@ -18,6 +18,7 @@ class GatewayConnection(object):
         return self
 
     def __exit__(self, type, value, traceback):
+        self.logger.critical("Exiting connection context.", exc_info=(type, value, traceback))
         self.close()
 
     @property
