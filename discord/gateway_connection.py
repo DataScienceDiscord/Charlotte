@@ -1,5 +1,6 @@
 import logging
 import websocket
+from websocket._exceptions import WebSocketConnectionClosedException
 from discord.payload import Payload
 from discord.gateway_exceptions import DisconnectionException
 
@@ -43,7 +44,10 @@ class GatewayConnection(object):
     def close(self):
         """Closes the websocket connection."""
         self.logger.info("Closing gateway websocket.")
-        self.ws.close()
+        try:
+            self.ws.close()
+        except WebSocketConnectionClosedException:
+            pass
 
     def receive_payload(self):
         """Receives a payload packet from the websocket
