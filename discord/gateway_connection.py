@@ -58,7 +58,7 @@ class GatewayConnection(object):
         """
         try:
             packet = self.ws.recv()
-        except ConnectionResetError as e:
+        except (ConnectionResetError, WebSocketConnectionClosedException) as e:
             raise DisconnectionException() from e
         self.logger.info("Inc. packet: %s", packet[:1000])
         if packet == "":
@@ -75,7 +75,7 @@ class GatewayConnection(object):
             payload: A Payload object.
         """
         packet = payload.to_packet()
-        self.ws.send(packet)
+        self.ws.send(packet) # Todo: Handle WebSocketConnectionClosedException
         # Make sure we don't log confidential info.
         to_log = packet
         if payload.opcode == Payload.IDENTIFY or payload.opcode == Payload.RESUME:
