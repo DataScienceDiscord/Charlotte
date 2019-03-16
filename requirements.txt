@@ -11,3 +11,4 @@ seaborn
 pytest-cov
 coveralls
 pandas
+scipy

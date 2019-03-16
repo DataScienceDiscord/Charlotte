@@ -135,13 +135,22 @@ class Database(object):
                       .limit(top_n)
         return list(query)
 
-    def get_message_count_per_date(self):
+    def get_message_count_over_period(self, period):
         """Gets the number of messages posted by date.
 
+        Args:
+            period: The period over which to count messages, can be "day" or "week".
+
         Returns:
-            A list of objects containing a day (date) and a count (number of messages posted that day) for every date
+            A list of objects containing a date and a count (number of messages posted that day) for every date
             where a message was posted on the channel.
         """
-        query = Message.select(db.truncate_date("day", Message.date).alias("day"), fn.Count(Message.id)) \
-                       .group_by(db.truncate_date("day", Message.date))
+        if period == "week":
+            query = Message.select(db.truncate_date("day", Message.date).alias("date"), fn.Count(Message.id)) \
+                           .group_by(db.truncate_date("day", Message.date))
+        elif period == "day":
+            query = Message.select(Message.date.hour.alias("date"), fn.Count(Message.id)) \
+                           .group_by(Message.date.hour)
+        else:
+            raise ValueError("Unknown period.")
         return list(query)
