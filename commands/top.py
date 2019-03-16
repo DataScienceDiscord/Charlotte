@@ -7,7 +7,7 @@ from discord import Message
 
 
 
-def top(message, database, num_users):
+def top(message, database, num_users, *args):
     try:
         num_users = int(num_users)
     except ValueError:

@@ -8,7 +8,7 @@ from discord import Message
 
 
 
-def activity(message, database):
+def activity(message, database, *args):
     messages = database.get_message_count_per_date()
     records  = [(message.day, message.count) for message in messages]
 
