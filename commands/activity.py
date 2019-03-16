@@ -26,7 +26,7 @@ def activity(message, database, *args):
     plt.figure(figsize=(600/my_dpi, 300/my_dpi), dpi=my_dpi)
     ax = seaborn.lineplot(x="weekday",
                           y="percent",
-                          data=df2,
+                          data=df,
                           sort=False,
                           palette=seaborn.color_palette(["#77b1da", "#3f6d8e"]))
     plt.ylim(0)

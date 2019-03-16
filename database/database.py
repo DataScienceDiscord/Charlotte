@@ -1,5 +1,6 @@
 from database import Member
 from database import Message
+from database.base_model import db
 from peewee import fn, JOIN, SQL
 
 
