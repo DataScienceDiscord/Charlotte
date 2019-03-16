@@ -10,3 +10,4 @@ matplotlib
 seaborn
 pytest-cov
 coveralls
+pandas

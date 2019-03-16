@@ -102,6 +102,14 @@ class Database(object):
         return Message.delete().where(Message.id == message_id).execute()
 
     def get_top_members_per_message_count(self, top_n=9):
+        """Gets the most active members sorted by number of messages posted.
+
+        Args:
+            top_n: The maximum number of members to return.
+
+        Returns:
+            A list of the top n most active members.
+        """
         query = Member.select(Member, fn.Count(Message.id).alias('count')) \
                       .join(Message, JOIN.RIGHT_OUTER) \
                       .group_by(Member) \
@@ -110,9 +118,29 @@ class Database(object):
         return list(query)
 
     def get_top_members_per_num_characters(self, top_n=20):
+        """Gets the most active members sorted by the sum of the number of
+        characters in the messages they posted.
+
+        Args:
+            top_n: The maximum number of members to return.
+
+        Returns:
+            A list of the top n most active members.
+        """
         query = Member.select(Member, fn.SUM(fn.LENGTH(Message.content)).alias('length')) \
                       .join(Message, JOIN.RIGHT_OUTER) \
                       .group_by(Member) \
                       .order_by(SQL('length').desc()) \
                       .limit(top_n)
+        return list(query)
+
+    def get_message_count_per_date(self):
+        """Gets the number of messages posted by date.
+
+        Returns:
+            A list of objects containing a day (date) and a count (number of messages posted that day) for every date
+            where a message was posted on the channel.
+        """
+        query = Message.select(db.truncate_date("day", Message.date).alias("day"), fn.Count(Message.id)) \
+                       .group_by(db.truncate_date("day", Message.date))
         return list(query)
