@@ -1,5 +1,6 @@
 from database import Member
 from database import Message
+from database import Thanks
 from database.base_model import db
 from peewee import fn, JOIN, SQL
 
@@ -154,3 +155,16 @@ class Database(object):
         else:
             raise ValueError("Unknown period.")
         return list(query)
+
+    def thank_member(self, thanks_recipient_id, thanks_giver_id):
+        """Adds a thank you to the database.
+
+        Args:
+            thanks_recipient_id: The id of the member to be thanked.
+            thanks_giver_id: The id of the member who's thankful.
+
+        Returns:
+            A thanks record.
+        """
+        thanks = Thanks.create(given_to=thanks_recipient_id, given_by=thanks_giver_id)
+        return thanks

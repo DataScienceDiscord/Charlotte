@@ -16,7 +16,8 @@ def test_from_payload():
             "username": "Django",
             "discriminator": "#1235"
         },
-        "timestamp": datetime.datetime.now()
+        "timestamp": datetime.datetime.now(),
+        "mentions": []
     })
 
     message = Message.from_payload(payload)
@@ -38,7 +39,8 @@ def test_to_payload():
             "username": "Django",
             "discriminator": "#1235"
         },
-        "timestamp": datetime.datetime.now()
+        "timestamp": datetime.datetime.now(),
+        "mentions": []
     })
 
     message = Message.from_payload(payload)
@@ -58,7 +60,8 @@ def test_to_json():
             "username": "Django",
             "discriminator": "#1235"
         },
-        "timestamp": datetime.datetime.now()
+        "timestamp": datetime.datetime.now(),
+        "mentions": []
     })
 
     message = Message.from_payload(payload)
