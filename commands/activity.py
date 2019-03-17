@@ -61,7 +61,7 @@ def activity(message, database, period, *args):
                           palette=seaborn.color_palette(["#77b1da", "#3f6d8e"]))
     plt.ylim(0)
     if period == "day":
-        plt.xlabel("Hour of the Day")
+        plt.xlabel("Hour of the Day (UTC + 1)")
     elif period == "week":
         plt.xlabel("Day of the Week")
 
