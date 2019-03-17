@@ -12,7 +12,7 @@ def help(message, database, *args):
     Returns:
         A discord message.
     """
-    if len(args) == 0:
+    if len(args) == 0 or args[0] == "":
         help_message = "```Commands: \n - " + "\n - ".join(commands.identifiers) + "```"
     elif args[0] in commands.identifiers:
         help_message = "```%s```" % commands.identifiers[args[0]].__doc__
