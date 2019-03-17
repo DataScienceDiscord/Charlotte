@@ -12,6 +12,7 @@ class Consumer(object):
     ENDPOINT = "https://discordapp.com/api/"
     CREATE_MESSAGE_ROUTE = "channels/%s/messages"
     LIST_GUILD_MEMBERS_ROUTE = "guilds/%s/members"
+    LIST_GUILD_INVITES_ROUTE = "guilds/%s/invites"
     URL     = "https://github.com/DataScienceDiscord/Charlotte"
     NAME    = "Charlotte"
     VERSION = 0.1
@@ -50,3 +51,13 @@ class Consumer(object):
         return requests.get(Consumer.ENDPOINT + Consumer.LIST_GUILD_MEMBERS_ROUTE % guild_id,
                             headers = headers,
                             params  = params)
+
+    def list_guild_invites(self, guild_id):
+        """Gets a list of the active guild invites.
+
+        Args:
+            guild_id: The guild whose invites we want.
+        """
+        headers = copy.deepcopy(self.headers)
+        return requests.get(Consumer.ENDPOINT + Consumer.LIST_GUILD_INVITES_ROUTE % guild_id,
+                            headers = headers)
