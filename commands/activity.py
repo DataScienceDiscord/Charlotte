@@ -25,6 +25,14 @@ def aggregate_messages_per_hour(message_counts):
 
 
 def activity(message, database, period, *args):
+    """Displays the number of messages posted over a given period.
+
+    Args:
+        period: The period over which to count messages, can be "day" or "week".
+
+    Returns:
+        A discord message containing an activity graph attachment.
+    """
     if period not in ["week", "day"]:
         response = Message("Wrong command parameters.", message.channel_id, "Charlotte", "Charlotte")
         return response

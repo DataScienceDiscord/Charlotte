@@ -8,6 +8,14 @@ from discord import Message
 
 
 def top(message, database, num_users, *args):
+    """Displays the most active users sorted by number of messages posted.
+
+    Args:
+        num_users: The number of top users to display.
+
+    Returns:
+        A discord message containing a histogram of most active users attachment.
+    """
     try:
         num_users = int(num_users)
     except ValueError:
