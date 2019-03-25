@@ -45,23 +45,7 @@ class Dispatcher(object):
             A tuple containing the command identifier and the parameters.
         """
         if self.is_command(content):
-
-            # Extract command
-            #commands look like:
-            # prefix(includes delimiter) command delimiter params
-            # without spaces
-            command = content.split(Dispatcher.DELIMITER)[1]
-            if command == "":
-                raise ValueError("Badly formatted command.")
-
-            # Extract params
-            content_start = len(Dispatcher.COMMAND_PREFIX) + len(command)
-            params = content[content_start:]
-
-            # Getting rid of the delimiter
-            if len(params) >= 1:
-                params = params[1:]
-
+            prefix, command, *params = content.split(Dispatcher.DELIMITER)
             return command, params
         return None, None
 
@@ -94,7 +78,11 @@ class Dispatcher(object):
         command, params = self.parse(message.content)
         if command:
             if command in self.commands.identifiers:
-                response = self.dispatch(command, message, params)
+                try:
+                    response = self.dispatch(command, message, *params)
+                except Exception as e:
+                    self.logger.critical("Unexpected command failure", exc_info=True)
+                    response = self.dispatch("unknown_command", message)
             else:
                 response = self.dispatch("unknown_command", message)
             if response is not None:

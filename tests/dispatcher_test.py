@@ -44,19 +44,17 @@ def test_parse():
     content = "!c/say/hello"
     command, params = ds.parse(content)
     assert command == "say"
-    assert params == "hello"
+    assert params == ["hello"]
+
+    content = "!c/say/hello/there"
+    command, params = ds.parse(content)
+    assert command == "say"
+    assert params == ["hello", "there"]
 
     content = "!c/dice"
     command, params = ds.parse(content)
     assert command == "dice"
-    assert params == ""
-
-    content = "!c/"
-    try:
-        command, params = ds.parse(content)
-        assert False, "Should have raised a BadCommandError."
-    except ValueError:
-        pass
+    assert params == []
 
     content = "dfgswrg"
     command, params = ds.parse(content)
